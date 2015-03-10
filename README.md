@@ -18,7 +18,7 @@ defer death.Close()
 death.WaitForDeath() // this will finish when a signal of your type is sent to your application
 ```
 
-## Close other structs when shutdown has been signaled
+### Close Other Objects on Shutdown
 <p>One simple feature of death is that it can also close other objects when shutdown starts</p>
 ```
 import (
