@@ -28,10 +28,6 @@ func TestDeath(t *testing.T) {
 		So(closeMe.Closed, ShouldEqual, 1)
 	})
 
-	// Convey("Validate death happens cleanly with closable", t, func() {
-
-	// })
-
 }
 
 type CloseMe struct {
