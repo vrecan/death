@@ -62,8 +62,6 @@ func getSignal(sig string) SIGNAL {
 }
 
 func (d *Death) listenForDeath() {
-	d.wg.Add(1)
-	defer d.wg.Done()
 	for sig := range d.deathChannel {
 		signal := getSignal(sig)
 		_, ok := d.deathSignals[signal]
@@ -75,12 +73,19 @@ func (d *Death) listenForDeath() {
 
 //Wait for death
 func (d *Death) WaitForDeath() {
-	d.wg.Wait()
+	d.listenForDeath()
 }
 
 //Manage death of application by signal
 func listenForSignal(c <-chan os.Signal, death chan string) {
 	for sig := range c {
 		death <- sig.String()
+	}
+}
+
+func (d *Death) Close() {
+	if nil != d {
+		close(d.sigChannel)
+		close(d.deathChannel)
 	}
 }
