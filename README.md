@@ -33,5 +33,5 @@ objects := make([]DEATH.Closable,0)
 objects = append(objects, &{}newType) // this will work as long as the type implements a Close method
 
 //when you want to block for shutdown signals
-death.WaitForDeath(objects) // this will finish when a signal of your type is sent to your application
+death.WaitForDeath(objects...) // this will finish when a signal of your type is sent to your application
 ```
