@@ -14,7 +14,7 @@ type Death struct {
 
 func NewDeath(signals ...os.Signal) (death *Death) {
 	death = &Death{}
-	death.sigChannel = make(chan os.Signal, 10)
+	death.sigChannel = make(chan os.Signal, 1)
 	signal.Notify(death.sigChannel, signals...)
 	death.wg.Add(1)
 	go death.listenForSignal(death.sigChannel)
