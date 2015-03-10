@@ -1,7 +1,11 @@
-# death
-<p>Simple library to make it easier to manage the death of your application.
-Example code:
-</p>
+# Death
+<p>Simple library to make it easier to manage the death of your application.</p>
+
+## Get the Library
+```
+go get github.com/vrecan/death
+```
+## Use the Library
 ```
 import (
         DEATH "github.com/vrecan/death"
