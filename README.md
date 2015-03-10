@@ -1,4 +1,4 @@
-# Death
+# Death [![Build Status](https://travis-ci.org/vrecan/death.svg?branch=master)](https://travis-ci.org/vrecan/death)
 <p>Simple library to make it easier to manage the death of your application.</p>
 
 ## Get the Library
