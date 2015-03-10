@@ -1,11 +1,11 @@
 # Death [![Build Status](https://travis-ci.org/vrecan/death.svg?branch=master)](https://travis-ci.org/vrecan/death)
 <p>Simple library to make it easier to manage the death of your application.</p>
 
-## Get the Library
+## Get The Library
 ```
 go get github.com/vrecan/death
 ```
-## Use the Library
+## Use The Library
 ```
 import (
         DEATH "github.com/vrecan/death"
@@ -18,7 +18,7 @@ defer death.Close()
 death.WaitForDeath() // this will finish when a signal of your type is sent to your application
 ```
 
-### Close Other Objects on Shutdown
+### Close Other Objects On Shutdown
 <p>One simple feature of death is that it can also close other objects when shutdown starts</p>
 ```
 import (
