@@ -1,7 +1,7 @@
 package death
 
 import (
-	// "fmt"
+	log "github.com/cihub/seelog"
 	"os"
 	"os/signal"
 	"sync"
@@ -16,6 +16,8 @@ func NewDeath(signals ...os.Signal) (death *Death) {
 	death = &Death{}
 	death.sigChannel = make(chan os.Signal, 10)
 	signal.Notify(death.sigChannel, signals...)
+	death.wg.Add(1)
+	go death.listenForSignal(death.sigChannel)
 	return death
 }
 
@@ -24,16 +26,17 @@ type Closable interface {
 }
 
 //Wait for death
-func (d *Death) WaitForDeath(closable []Closable) {
+func (d *Death) WaitForDeath(closable ...Closable) {
 	d.wg.Wait()
+	log.Info("Shutdown started...")
+	log.Debug("Closing ", len(closable), " objects")
 	for _, c := range closable {
 		c.Close()
 	}
 }
 
 //Manage death of application by signal
-func (d *Death) listenForSignal(c <-chan os.Signal, death chan string) {
-	d.wg.Add(1)
+func (d *Death) listenForSignal(c <-chan os.Signal) {
 	defer d.wg.Done()
 	for _ = range c {
 		return
