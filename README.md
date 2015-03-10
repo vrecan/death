@@ -7,31 +7,47 @@ go get github.com/vrecan/death
 ```
 ## Use The Library
 ```
-import (
-        DEATH "github.com/vrecan/death"
-        SYS "syscall"
-)
-death := DEATH.NewDeath(SYS.SIGINT, SYS.SIGTERM) //pass the signals you want to end your application
-defer death.Close()
+package main
 
-//when you want to block for shutdown signals
-death.WaitForDeath() // this will finish when a signal of your type is sent to your application
+import (
+	DEATH "github.com/vrecan/death"
+	SYS "syscall"
+)
+
+func main() {
+	death := DEATH.NewDeath(SYS.SIGINT, SYS.SIGTERM) //pass the signals you want to end your application
+	defer death.Close()
+
+	//when you want to block for shutdown signals
+	death.WaitForDeath() // this will finish when a signal of your type is sent to your application
+}
 ```
 
 ### Close Other Objects On Shutdown
 <p>One simple feature of death is that it can also close other objects when shutdown starts</p>
 ```
+package main
+
 import (
-        DEATH "github.com/vrecan/death"
-        SYS "syscall"
+	DEATH "github.com/vrecan/death"
+	SYS "syscall"
 )
-death := DEATH.NewDeath(SYS.SIGINT, SYS.SIGTERM) //pass the signals you want to end your application
-defer death.Close()
 
-objects := make([]DEATH.Closable,0)
+func main() {
+	death := DEATH.NewDeath(SYS.SIGINT, SYS.SIGTERM) //pass the signals you want to end your application
+	defer death.Close()
 
-objects = append(objects, &{}newType) // this will work as long as the type implements a Close method
+	objects := make([]DEATH.Closable, 0)
 
-//when you want to block for shutdown signals
-death.WaitForDeath(objects...) // this will finish when a signal of your type is sent to your application
+	objects = append(objects, &NewType{}) // this will work as long as the type implements a Close method
+
+	//when you want to block for shutdown signals
+	death.WaitForDeath(objects...) // this will finish when a signal of your type is sent to your application
+}
+
+type NewType struct {
+}
+
+func (n *NewType) Close() {
+}
 ```
