@@ -1,8 +1,6 @@
 language: go
 install:
-- go get github.com/tools/godep
 - go get golang.org/x/tools/cmd/cover
 - export PATH=$PATH:$HOME/gopath/bin
-- $HOME/gopath/bin/godep restore
 - go install github.com/vrecan/death/./...
 script: go test ./... -cover --race
