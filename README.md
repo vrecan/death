@@ -16,8 +16,6 @@ import (
 
 func main() {
 	death := DEATH.NewDeath(SYS.SIGINT, SYS.SIGTERM) //pass the signals you want to end your application
-	defer death.Close()
-
 	//when you want to block for shutdown signals
 	death.WaitForDeath() // this will finish when a signal of your type is sent to your application
 }
@@ -35,8 +33,6 @@ import (
 
 func main() {
 	death := DEATH.NewDeath(SYS.SIGINT, SYS.SIGTERM) //pass the signals you want to end your application
-	defer death.Close()
-
 	objects := make([]DEATH.Closable, 0)
 
 	objects = append(objects, &NewType{}) // this will work as long as the type implements a Close method
