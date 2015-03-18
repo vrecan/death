@@ -6,6 +6,7 @@ import (
 	"os"
 	"syscall"
 	"testing"
+	"time"
 )
 
 func TestDeath(t *testing.T) {
@@ -13,7 +14,6 @@ func TestDeath(t *testing.T) {
 
 	Convey("Validate death happens cleanly", t, func() {
 		death := NewDeath(syscall.SIGTERM)
-		defer death.Close()
 		syscall.Kill(os.Getpid(), syscall.SIGTERM)
 		death.WaitForDeath()
 
@@ -22,12 +22,27 @@ func TestDeath(t *testing.T) {
 	Convey("Validate death happens with other signals", t, func() {
 		death := NewDeath(syscall.SIGHUP)
 		closeMe := &CloseMe{}
-		defer death.Close()
 		syscall.Kill(os.Getpid(), syscall.SIGHUP)
 		death.WaitForDeath(closeMe)
 		So(closeMe.Closed, ShouldEqual, 1)
 	})
 
+	Convey("Validate death gives up after timeout", t, func() {
+		death := NewDeath(syscall.SIGHUP)
+		death.setTimeout(10 * time.Millisecond)
+		neverClose := &neverClose{}
+		syscall.Kill(os.Getpid(), syscall.SIGHUP)
+		death.WaitForDeath(neverClose)
+
+	})
+
+}
+
+type neverClose struct {
+}
+
+func (n *neverClose) Close() {
+	time.Sleep(2 * time.Minute)
 }
 
 type CloseMe struct {
