@@ -82,7 +82,7 @@ func (d *Death) closeObjects(c Closable, done chan<- bool) {
 //Manage death of application by signal.
 func (d *Death) listenForSignal(c <-chan os.Signal) {
 	defer d.wg.Done()
-	for _ = range c {
+	for range c {
 		return
 	}
 }
