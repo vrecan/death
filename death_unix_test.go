@@ -1,3 +1,5 @@
+// +build linux bsd darwin
+
 package death
 
 import (
