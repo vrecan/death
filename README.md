@@ -4,11 +4,13 @@
 <p>Simple library to make it easier to manage the death of your application.</p>
 
 ## Get The Library
-```
+
+```bash
 go get github.com/vrecan/death
 ```
 ## Use The Library
-```
+
+```go
 package main
 
 import (
@@ -25,7 +27,8 @@ func main() {
 
 ### Close Other Objects On Shutdown
 <p>One simple feature of death is that it can also close other objects when shutdown starts</p>
-```
+
+```go
 package main
 
 import (
