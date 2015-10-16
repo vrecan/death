@@ -49,6 +49,7 @@ func main() {
 type NewType struct {
 }
 
-func (n *NewType) Close() {
+func (c *CloseMe) Close() error {
+	return nil
 }
 ```
