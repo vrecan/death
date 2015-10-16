@@ -43,14 +43,16 @@ func TestDeath(t *testing.T) {
 type neverClose struct {
 }
 
-func (n *neverClose) Close() {
+func (n *neverClose) Close() error {
 	time.Sleep(2 * time.Minute)
+	return nil
 }
 
 type CloseMe struct {
 	Closed int
 }
 
-func (c *CloseMe) Close() {
+func (c *CloseMe) Close() error {
 	c.Closed++
+	return nil
 }

@@ -6,6 +6,7 @@ import (
 	"os/signal"
 	"sync"
 	"time"
+	"io"
 )
 
 type Death struct {
@@ -29,13 +30,8 @@ func (d *Death) setTimeout(t time.Duration) {
 	d.timeout = t
 }
 
-//Interface for closing objects
-type Closable interface {
-	Close()
-}
-
 //Wait for death and then kill all items that need to die.
-func (d *Death) WaitForDeath(closable ...Closable) {
+func (d *Death) WaitForDeath(closable ...io.Closer) {
 	d.wg.Wait()
 	log.Info("Shutdown started...")
 	count := len(closable)
@@ -46,7 +42,7 @@ func (d *Death) WaitForDeath(closable ...Closable) {
 }
 
 //Close all the objects at once and wait forr them to finish with a channel.
-func (d *Death) closeInMass(closable ...Closable) {
+func (d *Death) closeInMass(closable ...io.Closer) {
 	count := len(closable)
 	//call close async
 	done := make(chan bool, count)
@@ -74,7 +70,7 @@ func (d *Death) closeInMass(closable ...Closable) {
 }
 
 //Close objects and return a bool when finished on a channel.
-func (d *Death) closeObjects(c Closable, done chan<- bool) {
+func (d *Death) closeObjects(c io.Closer, done chan<- bool) {
 	c.Close()
 	done <- true
 }
