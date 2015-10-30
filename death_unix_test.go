@@ -38,6 +38,48 @@ func TestDeath(t *testing.T) {
 
 	})
 
+	Convey("Validate death uses new logger", t, func() {
+		death := NewDeath(syscall.SIGHUP)
+		closeMe := &CloseMe{}
+		logger := &MockLogger{}
+		death.setLogger(logger)
+
+		syscall.Kill(os.Getpid(), syscall.SIGHUP)
+		death.WaitForDeath(closeMe)
+		So(closeMe.Closed, ShouldEqual, 1)
+		So(logger.Logs, ShouldNotBeEmpty)
+	})
+
+}
+
+type MockLogger struct {
+	Logs []interface{}
+}
+
+func (l *MockLogger) Info(v ...interface{}) {
+	for _, log := range v {
+		l.Logs = append(l.Logs, log)
+	}
+}
+
+func (l *MockLogger) Debug(v ...interface{}) {
+	for _, log := range v {
+		l.Logs = append(l.Logs, log)
+	}
+}
+
+func (l *MockLogger) Error(v ...interface{}) error {
+	for _, log := range v {
+		l.Logs = append(l.Logs, log)
+	}
+	return nil
+}
+
+func (l *MockLogger) Warn(v ...interface{}) error {
+	for _, log := range v {
+		l.Logs = append(l.Logs, log)
+	}
+	return nil
 }
 
 type neverClose struct {

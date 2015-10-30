@@ -1,24 +1,35 @@
 package death
 
 import (
-	log "github.com/cihub/seelog"
+	LOG "github.com/cihub/seelog"
+	"io"
 	"os"
 	"os/signal"
 	"sync"
 	"time"
-	"io"
 )
 
 type Death struct {
-	wg         sync.WaitGroup
+	wg         *sync.WaitGroup
 	sigChannel chan os.Signal
 	timeout    time.Duration
+	log        Logger
+}
+
+//Logger interface to log.
+type Logger interface {
+	Error(v ...interface{}) error
+	Debug(v ...interface{})
+	Info(v ...interface{})
+	Warn(v ...interface{}) error
 }
 
 //Create Death with the signals you want to die from.
 func NewDeath(signals ...os.Signal) (death *Death) {
-	death = &Death{timeout: 10 * time.Second}
-	death.sigChannel = make(chan os.Signal, 1)
+	death = &Death{timeout: 10 * time.Second,
+		sigChannel: make(chan os.Signal, 1),
+		wg:         &sync.WaitGroup{},
+		log:        LOG.Current}
 	signal.Notify(death.sigChannel, signals...)
 	death.wg.Add(1)
 	go death.listenForSignal(death.sigChannel)
@@ -30,12 +41,17 @@ func (d *Death) setTimeout(t time.Duration) {
 	d.timeout = t
 }
 
+//setLogger Override the default logger (seelog)
+func (d *Death) setLogger(l Logger) {
+	d.log = l
+}
+
 //Wait for death and then kill all items that need to die.
 func (d *Death) WaitForDeath(closable ...io.Closer) {
 	d.wg.Wait()
-	log.Info("Shutdown started...")
+	d.log.Info("Shutdown started...")
 	count := len(closable)
-	log.Debug("Closing ", count, " objects")
+	d.log.Debug("Closing ", count, " objects")
 	if count > 0 {
 		d.closeInMass(closable...)
 	}
@@ -56,13 +72,13 @@ func (d *Death) closeInMass(closable ...io.Closer) {
 	for {
 		select {
 		case <-timer.C:
-			log.Warn(count, " object(s) remaining but timer expired.")
+			d.log.Warn(count, " object(s) remaining but timer expired.")
 			return
 		case <-done:
 			count--
-			log.Debug(count, " object(s) left")
+			d.log.Debug(count, " object(s) left")
 			if count == 0 {
-				log.Debug("Finished closing objects")
+				d.log.Debug("Finished closing objects")
 				return
 			}
 		}
