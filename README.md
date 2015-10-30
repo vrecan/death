@@ -34,6 +34,7 @@ package main
 import (
 	DEATH "github.com/vrecan/death"
 	SYS "syscall"
+	"io"
 )
 
 func main() {
