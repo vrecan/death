@@ -39,7 +39,7 @@ import (
 
 func main() {
 	death := DEATH.NewDeath(SYS.SIGINT, SYS.SIGTERM) //pass the signals you want to end your application
-	objects := make([]DEATH.Closable, 0)
+	objects := make([]io.Closer, 0)
 
 	objects = append(objects, &NewType{}) // this will work as long as the type implements a Close method
 
