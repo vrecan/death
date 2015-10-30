@@ -87,7 +87,10 @@ func (d *Death) closeInMass(closable ...io.Closer) {
 
 //Close objects and return a bool when finished on a channel.
 func (d *Death) closeObjects(c io.Closer, done chan<- bool) {
-	c.Close()
+	err := c.Close()
+	if nil != err {
+		d.log.Error(err)
+	}
 	done <- true
 }
 

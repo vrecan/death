@@ -3,6 +3,7 @@
 package death
 
 import (
+	"errors"
 	log "github.com/cihub/seelog"
 	. "github.com/smartystreets/goconvey/convey"
 	"os"
@@ -96,5 +97,5 @@ type CloseMe struct {
 
 func (c *CloseMe) Close() error {
 	c.Closed++
-	return nil
+	return errors.New("I've been closed!")
 }
