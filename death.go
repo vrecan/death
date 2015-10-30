@@ -42,6 +42,7 @@ func (d *Death) setTimeout(t time.Duration) {
 }
 
 //setLogger Override the default logger (seelog)
+//logger methods must be thread safe.
 func (d *Death) setLogger(l Logger) {
 	d.log = l
 }
