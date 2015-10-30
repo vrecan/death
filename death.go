@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"os/signal"
+	"reflect"
 	"sync"
 	"time"
 )
@@ -16,12 +17,19 @@ type Death struct {
 	log        Logger
 }
 
+var empty struct{}
+
 //Logger interface to log.
 type Logger interface {
 	Error(v ...interface{}) error
 	Debug(v ...interface{})
 	Info(v ...interface{})
 	Warn(v ...interface{}) error
+}
+
+type closer struct {
+	C    io.Closer
+	Name string
 }
 
 //Create Death with the signals you want to die from.
@@ -59,11 +67,17 @@ func (d *Death) WaitForDeath(closable ...io.Closer) {
 
 //Close all the objects at once and wait forr them to finish with a channel.
 func (d *Death) closeInMass(closable ...io.Closer) {
+
 	count := len(closable)
+	sentToClose := make(map[closer]struct{})
 	//call close async
-	done := make(chan bool, count)
+	doneClosers := make(chan closer, count)
 	for _, c := range closable {
-		go d.closeObjects(c, done)
+		elem := reflect.TypeOf(c).Elem()
+
+		closer := closer{C: c, Name: elem.Name()}
+		go d.closeObjects(closer, doneClosers)
+		sentToClose[closer] = empty
 	}
 
 	//wait on channel for notifications.
@@ -73,11 +87,16 @@ func (d *Death) closeInMass(closable ...io.Closer) {
 		select {
 		case <-timer.C:
 			d.log.Warn(count, " object(s) remaining but timer expired.")
+			for c, _ := range sentToClose {
+				d.log.Error("Failed to close: ", c.Name)
+			}
 			return
-		case <-done:
+		case closer := <-doneClosers:
+			delete(sentToClose, closer)
 			count--
 			d.log.Debug(count, " object(s) left")
-			if count == 0 {
+			d.log.Debug("Closers: ", sentToClose)
+			if count == 0 && len(sentToClose) == 0 {
 				d.log.Debug("Finished closing objects")
 				return
 			}
@@ -85,16 +104,16 @@ func (d *Death) closeInMass(closable ...io.Closer) {
 	}
 }
 
-//Close objects and return a bool when finished on a channel.
-func (d *Death) closeObjects(c io.Closer, done chan<- bool) {
-	err := c.Close()
+//closeObjects and return a bool when finished on a channel.
+func (d *Death) closeObjects(closer closer, done chan<- closer) {
+	err := closer.C.Close()
 	if nil != err {
 		d.log.Error(err)
 	}
-	done <- true
+	done <- closer
 }
 
-//Manage death of application by signal.
+//ListenForSignal Manage death of application by signal.
 func (d *Death) listenForSignal(c <-chan os.Signal) {
 	defer d.wg.Done()
 	for range c {
