@@ -51,6 +51,16 @@ func TestDeath(t *testing.T) {
 		So(logger.Logs, ShouldNotBeEmpty)
 	})
 
+	Convey("Close multiple things with one that fails the timer", t, func() {
+		death := NewDeath(syscall.SIGHUP)
+		death.setTimeout(10 * time.Millisecond)
+		neverClose := &neverClose{}
+		closeMe := &CloseMe{}
+		syscall.Kill(os.Getpid(), syscall.SIGHUP)
+		death.WaitForDeath(neverClose, closeMe)
+		So(closeMe.Closed, ShouldEqual, 1)
+	})
+
 }
 
 type MockLogger struct {
