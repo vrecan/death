@@ -38,7 +38,7 @@ type closer struct {
 	PKGPath string
 }
 
-//Create Death with the signals you want to die from.
+//NewDeath Create Death with the signals you want to die from.
 func NewDeath(signals ...os.Signal) (death *Death) {
 	death = &Death{timeout: 10 * time.Second,
 		sigChannel: make(chan os.Signal, 1),
@@ -92,7 +92,7 @@ func (d *Death) closeInMass(closable ...io.Closer) {
 		select {
 		case <-timer.C:
 			d.log.Warn(count, " object(s) remaining but timer expired.")
-			for c, _ := range sentToClose {
+			for c := range sentToClose {
 				d.log.Error("Failed to close: ", c.PKGPath, "/", c.Name)
 			}
 			return
