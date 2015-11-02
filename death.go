@@ -28,8 +28,9 @@ type Logger interface {
 }
 
 type closer struct {
-	C    io.Closer
-	Name string
+	C       io.Closer
+	Name    string
+	PKGPath string
 }
 
 //Create Death with the signals you want to die from.
@@ -74,8 +75,7 @@ func (d *Death) closeInMass(closable ...io.Closer) {
 	doneClosers := make(chan closer, count)
 	for _, c := range closable {
 		elem := reflect.TypeOf(c).Elem()
-
-		closer := closer{C: c, Name: elem.Name()}
+		closer := closer{C: c, Name: elem.Name(), PKGPath: elem.PkgPath()}
 		go d.closeObjects(closer, doneClosers)
 		sentToClose[closer] = empty
 	}
@@ -88,7 +88,7 @@ func (d *Death) closeInMass(closable ...io.Closer) {
 		case <-timer.C:
 			d.log.Warn(count, " object(s) remaining but timer expired.")
 			for c, _ := range sentToClose {
-				d.log.Error("Failed to close: ", c.Name)
+				d.log.Error("Failed to close: ", c.PKGPath, "/", c.Name)
 			}
 			return
 		case closer := <-doneClosers:
