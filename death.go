@@ -1,5 +1,7 @@
 package death
 
+//Manage the death of your application.
+
 import (
 	LOG "github.com/cihub/seelog"
 	"io"
@@ -10,6 +12,7 @@ import (
 	"time"
 )
 
+//Death manages the death of your application.
 type Death struct {
 	wg         *sync.WaitGroup
 	sigChannel chan os.Signal
@@ -27,6 +30,8 @@ type Logger interface {
 	Warn(v ...interface{}) error
 }
 
+//closer is a wrapper to the struct we are going to close with metadata
+//to help with debuging close.
 type closer struct {
 	C       io.Closer
 	Name    string
@@ -51,12 +56,11 @@ func (d *Death) setTimeout(t time.Duration) {
 }
 
 //setLogger Override the default logger (seelog)
-//logger methods must be thread safe.
 func (d *Death) setLogger(l Logger) {
 	d.log = l
 }
 
-//Wait for death and then kill all items that need to die.
+//WaitForDeath wait for signal and then kill all items that need to die.
 func (d *Death) WaitForDeath(closable ...io.Closer) {
 	d.wg.Wait()
 	d.log.Info("Shutdown started...")
@@ -67,7 +71,7 @@ func (d *Death) WaitForDeath(closable ...io.Closer) {
 	}
 }
 
-//Close all the objects at once and wait forr them to finish with a channel.
+//closeInMass Close all the objects at once and wait forr them to finish with a channel.
 func (d *Death) closeInMass(closable ...io.Closer) {
 
 	count := len(closable)
