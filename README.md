@@ -50,7 +50,7 @@ func main() {
 type NewType struct {
 }
 
-func (c *CloseMe) Close() error {
+func (c *NewType) Close() error {
 	return nil
 }
 ```
