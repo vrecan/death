@@ -1,13 +1,9 @@
 package death
 
 import (
-	// "errors"
 	log "github.com/cihub/seelog"
 	. "github.com/smartystreets/goconvey/convey"
-	// "os"
-	// "syscall"
 	"testing"
-	// "time"
 )
 
 func TestGetPkgPath(t *testing.T) {
