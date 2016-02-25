@@ -19,8 +19,7 @@ func TestGetPkgPath(t *testing.T) {
 
 	Convey("Give pkgPath a interface", t, func() {
 		var closable Closable
-		c := &Closer{}
-		closable = c
+		closable = Closer{}
 		name, pkgPath := GetPkgPath(closable)
 		So(name, ShouldEqual, "Closer")
 		So(pkgPath, ShouldEqual, "github.com/vrecan/death")

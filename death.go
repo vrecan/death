@@ -69,17 +69,16 @@ func (d *Death) WaitForDeath(closable ...io.Closer) {
 	if count > 0 {
 		d.closeInMass(closable...)
 	}
+
 }
 
 //GetPkgPath for an io closer.
 func GetPkgPath(c io.Closer) (name string, pkgPath string) {
 
 	t := reflect.TypeOf(c)
+
 	name, pkgPath = t.Name(), t.PkgPath()
 	switch t.Kind() {
-	case reflect.Interface:
-		name = t.Elem().Name()
-		pkgPath = t.Elem().PkgPath()
 	case reflect.Ptr:
 		name = t.Elem().Name()
 		pkgPath = t.Elem().PkgPath()
