@@ -52,12 +52,12 @@ func NewDeath(signals ...os.Signal) (death *Death) {
 }
 
 //Override the time death is willing to wait for a objects to be closed.
-func (d *Death) setTimeout(t time.Duration) {
+func (d *Death) SetTimeout(t time.Duration) {
 	d.timeout = t
 }
 
 //setLogger Override the default logger (seelog)
-func (d *Death) setLogger(l Logger) {
+func (d *Death) SetLogger(l Logger) {
 	d.log = l
 }
 
@@ -109,7 +109,7 @@ func (d *Death) closeInMass(closable ...io.Closer) {
 		select {
 		case <-timer.C:
 			d.log.Warn(count, " object(s) remaining but timer expired.")
-			for _,c := range sentToClose {
+			for _, c := range sentToClose {
 				d.log.Error("Failed to close: ", c.PKGPath, "/", c.Name)
 			}
 			return

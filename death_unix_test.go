@@ -13,6 +13,7 @@ import (
 )
 
 type Unhashable map[string]interface{}
+
 func (u Unhashable) Close() error {
 	return nil
 }
@@ -44,7 +45,7 @@ func TestDeath(t *testing.T) {
 
 	Convey("Validate death gives up after timeout", t, func() {
 		death := NewDeath(syscall.SIGHUP)
-		death.setTimeout(10 * time.Millisecond)
+		death.SetTimeout(10 * time.Millisecond)
 		neverClose := &neverClose{}
 		syscall.Kill(os.Getpid(), syscall.SIGHUP)
 		death.WaitForDeath(neverClose)
@@ -55,7 +56,7 @@ func TestDeath(t *testing.T) {
 		death := NewDeath(syscall.SIGHUP)
 		closeMe := &CloseMe{}
 		logger := &MockLogger{}
-		death.setLogger(logger)
+		death.SetLogger(logger)
 
 		syscall.Kill(os.Getpid(), syscall.SIGHUP)
 		death.WaitForDeath(closeMe)
@@ -65,7 +66,7 @@ func TestDeath(t *testing.T) {
 
 	Convey("Close multiple things with one that fails the timer", t, func() {
 		death := NewDeath(syscall.SIGHUP)
-		death.setTimeout(10 * time.Millisecond)
+		death.SetTimeout(10 * time.Millisecond)
 		neverClose := &neverClose{}
 		closeMe := &CloseMe{}
 		syscall.Kill(os.Getpid(), syscall.SIGHUP)
