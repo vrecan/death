@@ -12,8 +12,20 @@ import (
 	"time"
 )
 
+type Unhashable map[string]interface{}
+func (u Unhashable) Close() error {
+	return nil
+}
+
 func TestDeath(t *testing.T) {
 	defer log.Flush()
+
+	Convey("Validate death handles unhashable types", t, func() {
+		u := make(Unhashable)
+		death := NewDeath(syscall.SIGTERM)
+		syscall.Kill(os.Getpid(), syscall.SIGTERM)
+		death.WaitForDeath(u)
+	})
 
 	Convey("Validate death happens cleanly", t, func() {
 		death := NewDeath(syscall.SIGTERM)
