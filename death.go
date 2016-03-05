@@ -33,6 +33,7 @@ type Logger interface {
 //closer is a wrapper to the struct we are going to close with metadata
 //to help with debuging close.
 type closer struct {
+	Index   int
 	C       io.Closer
 	Name    string
 	PKGPath string
@@ -91,14 +92,14 @@ func GetPkgPath(c io.Closer) (name string, pkgPath string) {
 func (d *Death) closeInMass(closable ...io.Closer) {
 
 	count := len(closable)
-	sentToClose := make(map[closer]struct{})
+	sentToClose := make(map[int]closer)
 	//call close async
 	doneClosers := make(chan closer, count)
-	for _, c := range closable {
+	for i, c := range closable {
 		name, pkgPath := GetPkgPath(c)
-		closer := closer{C: c, Name: name, PKGPath: pkgPath}
+		closer := closer{Index: i, C: c, Name: name, PKGPath: pkgPath}
 		go d.closeObjects(closer, doneClosers)
-		sentToClose[closer] = empty
+		sentToClose[i] = closer
 	}
 
 	//wait on channel for notifications.
@@ -108,12 +109,12 @@ func (d *Death) closeInMass(closable ...io.Closer) {
 		select {
 		case <-timer.C:
 			d.log.Warn(count, " object(s) remaining but timer expired.")
-			for c := range sentToClose {
+			for _,c := range sentToClose {
 				d.log.Error("Failed to close: ", c.PKGPath, "/", c.Name)
 			}
 			return
 		case closer := <-doneClosers:
-			delete(sentToClose, closer)
+			delete(sentToClose, closer.Index)
 			count--
 			d.log.Debug(count, " object(s) left")
 			d.log.Debug("Closers: ", sentToClose)
