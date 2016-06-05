@@ -57,7 +57,7 @@ func (c *NewType) Close() error {
 
 Or close using an anonymous function
 
-```
+```go
 package main
 
 import (
