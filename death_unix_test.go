@@ -74,6 +74,18 @@ func TestDeath(t *testing.T) {
 		So(closeMe.Closed, ShouldEqual, 1)
 	})
 
+	Convey("Close with anonymous function", t, func() {
+		death := NewDeath(syscall.SIGHUP)
+		death.SetTimeout(5 * time.Millisecond)
+		closeMe := &CloseMe{}
+		syscall.Kill(os.Getpid(), syscall.SIGHUP)
+		death.WaitForDeathWithFunc(func() {
+			closeMe.Close()
+			So(true, ShouldBeTrue)
+		})
+		So(closeMe.Closed, ShouldEqual, 1)
+	})
+
 }
 
 type MockLogger struct {
