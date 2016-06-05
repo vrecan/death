@@ -70,14 +70,20 @@ func (d *Death) WaitForDeath(closable ...io.Closer) {
 	if count > 0 {
 		d.closeInMass(closable...)
 	}
+}
 
+//WaitForDeathWithFunc allows you to have a single function get called when it's time to
+//kill your application.
+func (d *Death) WaitForDeathWithFunc(f func()) {
+	d.wg.Wait()
+	d.log.Info("Shutdown started...")
+	f()
 }
 
 //GetPkgPath for an io closer.
 func GetPkgPath(c io.Closer) (name string, pkgPath string) {
 
 	t := reflect.TypeOf(c)
-
 	name, pkgPath = t.Name(), t.PkgPath()
 	switch t.Kind() {
 	case reflect.Ptr:
