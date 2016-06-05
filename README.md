@@ -54,3 +54,23 @@ func (c *NewType) Close() error {
 	return nil
 }
 ```
+
+Or close using an anonymous function
+
+```
+package main
+
+import (
+	DEATH "github.com/vrecan/death"
+	SYS "syscall"
+	"io"
+)
+
+func main() {
+	death := DEATH.NewDeath(SYS.SIGINT, SYS.SIGTERM) //pass the signals you want to end your application
+	//when you want to block for shutdown signals
+	death.WaitForDeathWithFunc(func(){ 
+		//do whatever you want on death
+	}) 
+}
+```
