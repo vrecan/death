@@ -30,6 +30,14 @@ func TestDeath(t *testing.T) {
 		So(closeMe.Closed, ShouldEqual, 1)
 	})
 
+	Convey("Validate death happens with a manual call", t, func() {
+		death := NewDeath(syscall.SIGHUP)
+		closeMe := &CloseMe{}
+		death.InitiateDeath()
+		death.WaitForDeath(closeMe)
+		So(closeMe.Closed, ShouldEqual, 1)
+	})
+
 	Convey("Validate death gives up after timeout", t, func() {
 		death := NewDeath(syscall.SIGHUP)
 		death.setTimeout(10 * time.Millisecond)
