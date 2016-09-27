@@ -145,7 +145,10 @@ func (d *Death) closeObjects(closer closer, done chan<- closer) {
 
 //FallOnSword manually initiates the death process.
 func (d *Death) FallOnSword() {
-	d.callChannel <- struct{}{}
+	select {
+	case d.callChannel <- struct{}{}:
+	default:
+	}
 }
 
 //ListenForSignal Manage death of application by signal.
