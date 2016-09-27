@@ -14,10 +14,11 @@ import (
 
 //Death manages the death of your application.
 type Death struct {
-	wg         *sync.WaitGroup
-	sigChannel chan os.Signal
-	timeout    time.Duration
-	log        Logger
+	wg          *sync.WaitGroup
+	sigChannel  chan os.Signal
+	callChannel chan struct{}
+	timeout     time.Duration
+	log         Logger
 }
 
 var empty struct{}
@@ -42,12 +43,13 @@ type closer struct {
 //NewDeath Create Death with the signals you want to die from.
 func NewDeath(signals ...os.Signal) (death *Death) {
 	death = &Death{timeout: 10 * time.Second,
-		sigChannel: make(chan os.Signal, 1),
-		wg:         &sync.WaitGroup{},
-		log:        LOG.Current}
+		sigChannel:  make(chan os.Signal, 1),
+		callChannel: make(chan struct{}, 1),
+		wg:          &sync.WaitGroup{},
+		log:         LOG.Current}
 	signal.Notify(death.sigChannel, signals...)
 	death.wg.Add(1)
-	go death.listenForSignal(death.sigChannel)
+	go death.listenForSignal()
 	return death
 }
 
@@ -141,10 +143,20 @@ func (d *Death) closeObjects(closer closer, done chan<- closer) {
 	done <- closer
 }
 
+//FallOnSword manually initiates the death process.
+func (d *Death) FallOnSword() {
+	d.callChannel <- struct{}{}
+}
+
 //ListenForSignal Manage death of application by signal.
-func (d *Death) listenForSignal(c <-chan os.Signal) {
+func (d *Death) listenForSignal() {
 	defer d.wg.Done()
-	for range c {
-		return
+	for {
+		select {
+		case <-d.sigChannel:
+			return
+		case <-d.callChannel:
+			return
+		}
 	}
 }
