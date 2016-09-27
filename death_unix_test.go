@@ -59,6 +59,17 @@ func TestDeath(t *testing.T) {
 		death.WaitForDeath(closeMe)
 		So(closeMe.Closed, ShouldEqual, 1)
 	})
+	
+	Convey("Validate multiple sword falls do not block even after we have exited waitForDeath", t, func() {
+		death := NewDeath(syscall.SIGHUP)
+		closeMe := &CloseMe{}
+		death.FallOnSword()
+		death.FallOnSword()
+		death.WaitForDeath(closeMe)
+		death.FallOnSword()
+		death.FallOnSword()
+		So(closeMe.Closed, ShouldEqual, 1)
+	})	
 
 	Convey("Validate death gives up after timeout", t, func() {
 		death := NewDeath(syscall.SIGHUP)
