@@ -120,8 +120,8 @@ func (d *Death) closeObjects(closer closer, done chan<- closer) {
 	done <- closer
 }
 
-//InitiateDeath manually initiates the death process.
-func (d *Death) InitiateDeath() {
+//FallOnSword manually initiates the death process.
+func (d *Death) FallOnSword() {
 	d.callChannel <- struct{}{}
 }
 

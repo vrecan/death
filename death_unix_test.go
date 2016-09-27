@@ -33,7 +33,7 @@ func TestDeath(t *testing.T) {
 	Convey("Validate death happens with a manual call", t, func() {
 		death := NewDeath(syscall.SIGHUP)
 		closeMe := &CloseMe{}
-		death.InitiateDeath()
+		death.FallOnSword()
 		death.WaitForDeath(closeMe)
 		So(closeMe.Closed, ShouldEqual, 1)
 	})
