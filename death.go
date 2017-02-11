@@ -125,7 +125,6 @@ func (d *Death) closeInMass(closable ...io.Closer) {
 			delete(sentToClose, closer.Index)
 			count--
 			d.log.Debug(count, " object(s) left")
-			d.log.Debug("Closers: ", sentToClose)
 			if count == 0 && len(sentToClose) == 0 {
 				d.log.Debug("Finished closing objects")
 				return
