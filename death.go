@@ -82,8 +82,8 @@ func (d *Death) WaitForDeathWithFunc(f func()) {
 	f()
 }
 
-//GetPkgPath for an io closer.
-func GetPkgPath(c io.Closer) (name string, pkgPath string) {
+//getPkgPath for an io closer.
+func getPkgPath(c io.Closer) (name string, pkgPath string) {
 
 	t := reflect.TypeOf(c)
 	name, pkgPath = t.Name(), t.PkgPath()
@@ -104,7 +104,7 @@ func (d *Death) closeInMass(closable ...io.Closer) {
 	//call close async
 	doneClosers := make(chan closer, count)
 	for i, c := range closable {
-		name, pkgPath := GetPkgPath(c)
+		name, pkgPath := getPkgPath(c)
 		closer := closer{Index: i, C: c, Name: name, PKGPath: pkgPath}
 		go d.closeObjects(closer, doneClosers)
 		sentToClose[i] = closer

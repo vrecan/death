@@ -11,7 +11,7 @@ func TestGetPkgPath(t *testing.T) {
 
 	Convey("Give pkgPath a ptr", t, func() {
 		c := &Closer{}
-		name, pkgPath := GetPkgPath(c)
+		name, pkgPath := getPkgPath(c)
 		So(name, ShouldEqual, "Closer")
 		So(pkgPath, ShouldEqual, "github.com/vrecan/death")
 
@@ -20,14 +20,14 @@ func TestGetPkgPath(t *testing.T) {
 	Convey("Give pkgPath a interface", t, func() {
 		var closable Closable
 		closable = Closer{}
-		name, pkgPath := GetPkgPath(closable)
+		name, pkgPath := getPkgPath(closable)
 		So(name, ShouldEqual, "Closer")
 		So(pkgPath, ShouldEqual, "github.com/vrecan/death")
 	})
 
 	Convey("Give pkgPath a copy", t, func() {
 		c := Closer{}
-		name, pkgPath := GetPkgPath(c)
+		name, pkgPath := getPkgPath(c)
 		So(name, ShouldEqual, "Closer")
 		So(pkgPath, ShouldEqual, "github.com/vrecan/death")
 	})
