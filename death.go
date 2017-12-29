@@ -3,13 +3,14 @@ package death
 //Manage the death of your application.
 
 import (
-	LOG "github.com/cihub/seelog"
 	"io"
 	"os"
 	"os/signal"
 	"reflect"
 	"sync"
 	"time"
+
+	LOG "github.com/cihub/seelog"
 )
 
 //Death manages the death of your application.
@@ -53,12 +54,12 @@ func NewDeath(signals ...os.Signal) (death *Death) {
 	return death
 }
 
-//Override the time death is willing to wait for a objects to be closed.
+//SetTimeout Overrides the time death is willing to wait for a objects to be closed.
 func (d *Death) SetTimeout(t time.Duration) {
 	d.timeout = t
 }
 
-//setLogger Override the default logger (seelog)
+//SetLogger Overrides the default logger (seelog)
 func (d *Death) SetLogger(l Logger) {
 	d.log = l
 }
