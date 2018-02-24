@@ -22,8 +22,6 @@ type Death struct {
 	log         Logger
 }
 
-var empty struct{}
-
 //Logger interface to log.
 type Logger interface {
 	Error(v ...interface{}) error
