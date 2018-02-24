@@ -4,12 +4,13 @@ package death
 
 import (
 	"errors"
-	log "github.com/cihub/seelog"
-	. "github.com/smartystreets/goconvey/convey"
 	"os"
 	"syscall"
 	"testing"
 	"time"
+
+	"github.com/cihub/seelog"
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 type Unhashable map[string]interface{}
@@ -19,7 +20,7 @@ func (u Unhashable) Close() error {
 }
 
 func TestDeath(t *testing.T) {
-	defer log.Flush()
+	defer seelog.Flush()
 
 	Convey("Validate death handles unhashable types", t, func() {
 		u := make(Unhashable)
@@ -59,7 +60,7 @@ func TestDeath(t *testing.T) {
 		death.WaitForDeath(closeMe)
 		So(closeMe.Closed, ShouldEqual, 1)
 	})
-	
+
 	Convey("Validate multiple sword falls do not block even after we have exited waitForDeath", t, func() {
 		death := NewDeath(syscall.SIGHUP)
 		closeMe := &CloseMe{}
@@ -69,7 +70,7 @@ func TestDeath(t *testing.T) {
 		death.FallOnSword()
 		death.FallOnSword()
 		So(closeMe.Closed, ShouldEqual, 1)
-	})	
+	})
 
 	Convey("Validate death gives up after timeout", t, func() {
 		death := NewDeath(syscall.SIGHUP)
