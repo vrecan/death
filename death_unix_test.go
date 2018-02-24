@@ -161,5 +161,5 @@ type CloseMe struct {
 
 func (c *CloseMe) Close() error {
 	c.Closed++
-	return errors.New("I've been closed!")
+	return errors.New("I have been closed")
 }
