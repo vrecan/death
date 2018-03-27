@@ -5,8 +5,18 @@
 
 ## Get The Library
 
+Use gopkg.in to import death based on your logger.
+
+Version | Go Get URL | source | doc | Notes |
+--------|------------|--------|-----|-------|
+2.x     | [gopkg.in/vrecan/death.v2](https://gopkg.in/vrecan/death.v2)| [source]() | [doc]() | This supports loggers who _do not_ return an error from their `Error` and `Warn` functions like [logrus](https://github.com/sirupsen/logrus)
+1.x     | [gopkg.in/vrecan/death.v1](https://gopkg.in/vrecan/death.v1)| [souce](https://github.com/vrecan/death/tree/v1.0) | [doc](https://godoc.org/gopkg.in/vrecan/death.v1) | This supports loggers who _do_ return an error from their `Error` and `Warn` functions like [seelog](https://github.com/cihub/seelog)
+
+
+
+Example
 ```bash
-go get github.com/vrecan/death
+go get gopkg.in/vrecan/death.v2
 ```
 ## Use The Library
 
