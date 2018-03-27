@@ -53,13 +53,15 @@ func NewDeath(signals ...os.Signal) (death *Death) {
 }
 
 //SetTimeout Overrides the time death is willing to wait for a objects to be closed.
-func (d *Death) SetTimeout(t time.Duration) {
+func (d *Death) SetTimeout(t time.Duration) *Death {
 	d.timeout = t
+	return d
 }
 
 //SetLogger Overrides the default logger (seelog)
-func (d *Death) SetLogger(l Logger) {
+func (d *Death) SetLogger(l Logger) *Death {
 	d.log = l
+	return d
 }
 
 //WaitForDeath wait for signal and then kill all items that need to die.
