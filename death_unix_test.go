@@ -133,18 +133,16 @@ func (l *MockLogger) Debug(v ...interface{}) {
 	}
 }
 
-func (l *MockLogger) Error(v ...interface{}) error {
+func (l *MockLogger) Error(v ...interface{}) {
 	for _, log := range v {
 		l.Logs = append(l.Logs, log)
 	}
-	return nil
 }
 
-func (l *MockLogger) Warn(v ...interface{}) error {
+func (l *MockLogger) Warn(v ...interface{}) {
 	for _, log := range v {
 		l.Logs = append(l.Logs, log)
 	}
-	return nil
 }
 
 type neverClose struct {

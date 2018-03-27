@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	LOG "github.com/cihub/seelog"
+	log "github.com/sirupsen/logrus"
 )
 
 //Death manages the death of your application.
@@ -24,10 +24,10 @@ type Death struct {
 
 //Logger interface to log.
 type Logger interface {
-	Error(v ...interface{}) error
+	Error(v ...interface{})
 	Debug(v ...interface{})
 	Info(v ...interface{})
-	Warn(v ...interface{}) error
+	Warn(v ...interface{})
 }
 
 //closer is a wrapper to the struct we are going to close with metadata
@@ -45,7 +45,7 @@ func NewDeath(signals ...os.Signal) (death *Death) {
 		sigChannel:  make(chan os.Signal, 1),
 		callChannel: make(chan struct{}, 1),
 		wg:          &sync.WaitGroup{},
-		log:         LOG.Current}
+		log:         log.StandardLogger()}
 	signal.Notify(death.sigChannel, signals...)
 	death.wg.Add(1)
 	go death.listenForSignal()
@@ -53,13 +53,15 @@ func NewDeath(signals ...os.Signal) (death *Death) {
 }
 
 //SetTimeout Overrides the time death is willing to wait for a objects to be closed.
-func (d *Death) SetTimeout(t time.Duration) {
+func (d *Death) SetTimeout(t time.Duration) *Death {
 	d.timeout = t
+	return d
 }
 
 //SetLogger Overrides the default logger (seelog)
-func (d *Death) SetLogger(l Logger) {
+func (d *Death) SetLogger(l Logger) *Death {
 	d.log = l
+	return d
 }
 
 //WaitForDeath wait for signal and then kill all items that need to die.
