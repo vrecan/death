@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/signal"
 	"reflect"
+	"strings"
 	"sync"
 	"time"
 
@@ -115,11 +116,13 @@ func (d *Death) closeInMass(closable ...io.Closer) (err error) {
 	for {
 		select {
 		case <-timer.C:
-			d.log.Warn(count, " object(s) remaining but timer expired.")
+			s := "failed to close: "
+			pkgs := []string{}
 			for _, c := range sentToClose {
+				pkgs = append(pkgs, fmt.Sprintf("%s/%s", c.PKGPath, c.Name))
 				d.log.Error("Failed to close: ", c.PKGPath, "/", c.Name)
 			}
-			return fmt.Errorf("failed to close all objects")
+			return fmt.Errorf("%s", fmt.Sprintf("%s %s", s, strings.Join(pkgs, ", ")))
 		case closer := <-doneClosers:
 			delete(sentToClose, closer.Index)
 			count--
