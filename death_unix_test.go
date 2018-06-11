@@ -26,21 +26,23 @@ func TestDeath(t *testing.T) {
 		u := make(Unhashable)
 		death := NewDeath(syscall.SIGTERM)
 		syscall.Kill(os.Getpid(), syscall.SIGTERM)
-		death.WaitForDeath(u)
+		err := death.WaitForDeath(u)
+		So(err, ShouldBeNil)
 	})
 
 	Convey("Validate death happens cleanly", t, func() {
 		death := NewDeath(syscall.SIGTERM)
 		syscall.Kill(os.Getpid(), syscall.SIGTERM)
-		death.WaitForDeath()
-
+		err := death.WaitForDeath()
+		So(err, ShouldBeNil)
 	})
 
 	Convey("Validate death happens with other signals", t, func() {
 		death := NewDeath(syscall.SIGHUP)
 		closeMe := &CloseMe{}
 		syscall.Kill(os.Getpid(), syscall.SIGHUP)
-		death.WaitForDeath(closeMe)
+		err := death.WaitForDeath(closeMe)
+		So(err, ShouldBeNil)
 		So(closeMe.Closed, ShouldEqual, 1)
 	})
 
@@ -48,7 +50,8 @@ func TestDeath(t *testing.T) {
 		death := NewDeath(syscall.SIGHUP)
 		closeMe := &CloseMe{}
 		death.FallOnSword()
-		death.WaitForDeath(closeMe)
+		err := death.WaitForDeath(closeMe)
+		So(err, ShouldBeNil)
 		So(closeMe.Closed, ShouldEqual, 1)
 	})
 
@@ -57,7 +60,8 @@ func TestDeath(t *testing.T) {
 		closeMe := &CloseMe{}
 		death.FallOnSword()
 		death.FallOnSword()
-		death.WaitForDeath(closeMe)
+		err := death.WaitForDeath(closeMe)
+		So(err, ShouldBeNil)
 		So(closeMe.Closed, ShouldEqual, 1)
 	})
 
@@ -66,7 +70,8 @@ func TestDeath(t *testing.T) {
 		closeMe := &CloseMe{}
 		death.FallOnSword()
 		death.FallOnSword()
-		death.WaitForDeath(closeMe)
+		err := death.WaitForDeath(closeMe)
+		So(err, ShouldBeNil)
 		death.FallOnSword()
 		death.FallOnSword()
 		So(closeMe.Closed, ShouldEqual, 1)
@@ -77,8 +82,8 @@ func TestDeath(t *testing.T) {
 		death.SetTimeout(10 * time.Millisecond)
 		neverClose := &neverClose{}
 		syscall.Kill(os.Getpid(), syscall.SIGHUP)
-		death.WaitForDeath(neverClose)
-
+		err := death.WaitForDeath(neverClose)
+		So(err, ShouldNotBeNil)
 	})
 
 	Convey("Validate death uses new logger", t, func() {
@@ -88,7 +93,8 @@ func TestDeath(t *testing.T) {
 		death.SetLogger(logger)
 
 		syscall.Kill(os.Getpid(), syscall.SIGHUP)
-		death.WaitForDeath(closeMe)
+		err := death.WaitForDeath(closeMe)
+		So(err, ShouldBeNil)
 		So(closeMe.Closed, ShouldEqual, 1)
 		So(logger.Logs, ShouldNotBeEmpty)
 	})
@@ -99,7 +105,8 @@ func TestDeath(t *testing.T) {
 		neverClose := &neverClose{}
 		closeMe := &CloseMe{}
 		syscall.Kill(os.Getpid(), syscall.SIGHUP)
-		death.WaitForDeath(neverClose, closeMe)
+		err := death.WaitForDeath(neverClose, closeMe)
+		So(err, ShouldNotBeNil)
 		So(closeMe.Closed, ShouldEqual, 1)
 	})
 
