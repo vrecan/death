@@ -31,6 +31,7 @@ type closer struct {
 	C       io.Closer
 	Name    string
 	PKGPath string
+	Err     error
 }
 
 // NewDeath Create Death with the signals you want to die from.
@@ -105,6 +106,7 @@ func (d *Death) closeInMass(closable ...io.Closer) (err error) {
 
 	// wait on channel for notifications.
 	timer := time.NewTimer(d.timeout)
+	failedClosers := []closer{}
 	for {
 		select {
 		case <-timer.C:
@@ -118,11 +120,21 @@ func (d *Death) closeInMass(closable ...io.Closer) (err error) {
 		case closer := <-doneClosers:
 			delete(sentToClose, closer.Index)
 			count--
-			d.log.Debug(count, " object(s) left")
-			if count == 0 && len(sentToClose) == 0 {
-				d.log.Debug("Finished closing objects")
-				return nil
+			if closer.Err != nil {
+				failedClosers = append(failedClosers, closer)
 			}
+
+			d.log.Debug(count, " object(s) left")
+			if count != 0 || len(sentToClose) != 0 {
+				continue
+			}
+
+			if len(failedClosers) != 0 {
+				errString := generateErrString(failedClosers)
+				return fmt.Errorf("errors from closers: %s", errString)
+			}
+
+			return nil
 		}
 	}
 }
@@ -130,8 +142,9 @@ func (d *Death) closeInMass(closable ...io.Closer) (err error) {
 // closeObjects and return a bool when finished on a channel.
 func (d *Death) closeObjects(closer closer, done chan<- closer) {
 	err := closer.C.Close()
-	if nil != err {
+	if err != nil {
 		d.log.Error(err)
+		closer.Err = err
 	}
 	done <- closer
 }
@@ -155,4 +168,17 @@ func (d *Death) listenForSignal() {
 			return
 		}
 	}
+}
+
+// generateErrString generates a string containing a list of tuples of pkgname to error message
+func generateErrString(failedClosers []closer) (errString string) {
+	for i, fc := range failedClosers {
+		if i == 0 {
+			errString = fmt.Sprintf("%s/%s: %s", fc.PKGPath, fc.Name, fc.Err)
+			continue
+		}
+		errString = fmt.Sprintf("%s, %s/%s: %s", errString, fc.PKGPath, fc.Name, fc.Err)
+	}
+
+	return errString
 }
