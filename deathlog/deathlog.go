@@ -5,7 +5,6 @@ type Logger interface {
 	Error(v ...interface{})
 	Debug(v ...interface{})
 	Info(v ...interface{})
-	Warn(v ...interface{})
 }
 
 type defaultLogger struct{}
@@ -20,4 +19,3 @@ func DefaultLogger() Logger {
 func (d defaultLogger) Error(v ...interface{}) {}
 func (d defaultLogger) Debug(v ...interface{}) {}
 func (d defaultLogger) Info(v ...interface{})  {}
-func (d defaultLogger) Warn(v ...interface{})  {}
