@@ -3,7 +3,7 @@
 package death
 
 import (
-	"errors"
+	"fmt"
 	"os"
 	"syscall"
 	"testing"
@@ -122,6 +122,51 @@ func TestDeath(t *testing.T) {
 		So(closeMe.Closed, ShouldEqual, 1)
 	})
 
+	Convey("Validate death errors when closer returns error", t, func() {
+		death := NewDeath(syscall.SIGHUP)
+		killMe := &KillMe{}
+		death.FallOnSword()
+		err := death.WaitForDeath(killMe)
+		So(err, ShouldNotBeNil)
+	})
+
+}
+
+func TestGenerateErrString(t *testing.T) {
+	Convey("Generate for multiple errors", t, func() {
+		closers := []closer{
+			closer{
+				Err:     fmt.Errorf("error 1"),
+				Name:    "foo",
+				PKGPath: "my/pkg",
+			},
+			closer{
+				Err:     fmt.Errorf("error 2"),
+				Name:    "bar",
+				PKGPath: "my/otherpkg",
+			},
+		}
+
+		expected := "my/pkg/foo: error 1, my/otherpkg/bar: error 2"
+		actual := generateErrString(closers)
+
+		So(actual, ShouldEqual, expected)
+	})
+
+	Convey("Generate for single error", t, func() {
+		closers := []closer{
+			closer{
+				Err:     fmt.Errorf("error 1"),
+				Name:    "foo",
+				PKGPath: "my/pkg",
+			},
+		}
+
+		expected := "my/pkg/foo: error 1"
+		actual := generateErrString(closers)
+
+		So(actual, ShouldEqual, expected)
+	})
 }
 
 type MockLogger struct {
@@ -160,11 +205,19 @@ func (n *neverClose) Close() error {
 	return nil
 }
 
+// CloseMe returns nil from close
 type CloseMe struct {
 	Closed int
 }
 
 func (c *CloseMe) Close() error {
 	c.Closed++
-	return errors.New("I have been closed")
+	return nil
+}
+
+// KillMe returns an error from close
+type KillMe struct{}
+
+func (c *KillMe) Close() error {
+	return fmt.Errorf("error from closer")
 }
