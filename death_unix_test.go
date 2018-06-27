@@ -3,7 +3,7 @@
 package death
 
 import (
-	"errors"
+	"fmt"
 	"os"
 	"syscall"
 	"testing"
@@ -26,21 +26,23 @@ func TestDeath(t *testing.T) {
 		u := make(Unhashable)
 		death := NewDeath(syscall.SIGTERM)
 		syscall.Kill(os.Getpid(), syscall.SIGTERM)
-		death.WaitForDeath(u)
+		err := death.WaitForDeath(u)
+		So(err, ShouldBeNil)
 	})
 
 	Convey("Validate death happens cleanly", t, func() {
 		death := NewDeath(syscall.SIGTERM)
 		syscall.Kill(os.Getpid(), syscall.SIGTERM)
-		death.WaitForDeath()
-
+		err := death.WaitForDeath()
+		So(err, ShouldBeNil)
 	})
 
 	Convey("Validate death happens with other signals", t, func() {
 		death := NewDeath(syscall.SIGHUP)
 		closeMe := &CloseMe{}
 		syscall.Kill(os.Getpid(), syscall.SIGHUP)
-		death.WaitForDeath(closeMe)
+		err := death.WaitForDeath(closeMe)
+		So(err, ShouldBeNil)
 		So(closeMe.Closed, ShouldEqual, 1)
 	})
 
@@ -48,7 +50,8 @@ func TestDeath(t *testing.T) {
 		death := NewDeath(syscall.SIGHUP)
 		closeMe := &CloseMe{}
 		death.FallOnSword()
-		death.WaitForDeath(closeMe)
+		err := death.WaitForDeath(closeMe)
+		So(err, ShouldBeNil)
 		So(closeMe.Closed, ShouldEqual, 1)
 	})
 
@@ -57,7 +60,8 @@ func TestDeath(t *testing.T) {
 		closeMe := &CloseMe{}
 		death.FallOnSword()
 		death.FallOnSword()
-		death.WaitForDeath(closeMe)
+		err := death.WaitForDeath(closeMe)
+		So(err, ShouldBeNil)
 		So(closeMe.Closed, ShouldEqual, 1)
 	})
 
@@ -66,7 +70,8 @@ func TestDeath(t *testing.T) {
 		closeMe := &CloseMe{}
 		death.FallOnSword()
 		death.FallOnSword()
-		death.WaitForDeath(closeMe)
+		err := death.WaitForDeath(closeMe)
+		So(err, ShouldBeNil)
 		death.FallOnSword()
 		death.FallOnSword()
 		So(closeMe.Closed, ShouldEqual, 1)
@@ -77,8 +82,8 @@ func TestDeath(t *testing.T) {
 		death.SetTimeout(10 * time.Millisecond)
 		neverClose := &neverClose{}
 		syscall.Kill(os.Getpid(), syscall.SIGHUP)
-		death.WaitForDeath(neverClose)
-
+		err := death.WaitForDeath(neverClose)
+		So(err, ShouldNotBeNil)
 	})
 
 	Convey("Validate death uses new logger", t, func() {
@@ -88,7 +93,8 @@ func TestDeath(t *testing.T) {
 		death.SetLogger(logger)
 
 		syscall.Kill(os.Getpid(), syscall.SIGHUP)
-		death.WaitForDeath(closeMe)
+		err := death.WaitForDeath(closeMe)
+		So(err, ShouldBeNil)
 		So(closeMe.Closed, ShouldEqual, 1)
 		So(logger.Logs, ShouldNotBeEmpty)
 	})
@@ -99,7 +105,8 @@ func TestDeath(t *testing.T) {
 		neverClose := &neverClose{}
 		closeMe := &CloseMe{}
 		syscall.Kill(os.Getpid(), syscall.SIGHUP)
-		death.WaitForDeath(neverClose, closeMe)
+		err := death.WaitForDeath(neverClose, closeMe)
+		So(err, ShouldNotBeNil)
 		So(closeMe.Closed, ShouldEqual, 1)
 	})
 
@@ -115,6 +122,51 @@ func TestDeath(t *testing.T) {
 		So(closeMe.Closed, ShouldEqual, 1)
 	})
 
+	Convey("Validate death errors when closer returns error", t, func() {
+		death := NewDeath(syscall.SIGHUP)
+		killMe := &KillMe{}
+		death.FallOnSword()
+		err := death.WaitForDeath(killMe)
+		So(err, ShouldNotBeNil)
+	})
+
+}
+
+func TestGenerateErrString(t *testing.T) {
+	Convey("Generate for multiple errors", t, func() {
+		closers := []closer{
+			closer{
+				Err:     fmt.Errorf("error 1"),
+				Name:    "foo",
+				PKGPath: "my/pkg",
+			},
+			closer{
+				Err:     fmt.Errorf("error 2"),
+				Name:    "bar",
+				PKGPath: "my/otherpkg",
+			},
+		}
+
+		expected := "my/pkg/foo: error 1, my/otherpkg/bar: error 2"
+		actual := generateErrString(closers)
+
+		So(actual, ShouldEqual, expected)
+	})
+
+	Convey("Generate for single error", t, func() {
+		closers := []closer{
+			closer{
+				Err:     fmt.Errorf("error 1"),
+				Name:    "foo",
+				PKGPath: "my/pkg",
+			},
+		}
+
+		expected := "my/pkg/foo: error 1"
+		actual := generateErrString(closers)
+
+		So(actual, ShouldEqual, expected)
+	})
 }
 
 type MockLogger struct {
@@ -153,11 +205,19 @@ func (n *neverClose) Close() error {
 	return nil
 }
 
+// CloseMe returns nil from close
 type CloseMe struct {
 	Closed int
 }
 
 func (c *CloseMe) Close() error {
 	c.Closed++
-	return errors.New("I have been closed")
+	return nil
+}
+
+// KillMe returns an error from close
+type KillMe struct{}
+
+func (c *KillMe) Close() error {
+	return fmt.Errorf("error from closer")
 }

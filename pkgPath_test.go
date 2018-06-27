@@ -1,9 +1,10 @@
 package death
 
 import (
+	"testing"
+
 	log "github.com/cihub/seelog"
 	. "github.com/smartystreets/goconvey/convey"
-	"testing"
 )
 
 func TestGetPkgPath(t *testing.T) {
