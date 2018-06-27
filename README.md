@@ -17,7 +17,7 @@ Version | Go Get URL | source | doc | Notes |
 
 Example
 ```bash
-go get gopkg.in/vrecan/death.v2
+go get gopkg.in/vrecan/death.v3
 ```
 ## Use The Library
 
