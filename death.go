@@ -12,7 +12,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/grindlemire/death/deathlog"
+	"github.com/vrecan/death/deathlog"
 )
 
 // Death manages the death of your application.
