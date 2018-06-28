@@ -12,7 +12,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/vrecan/death/deathlog"
+	"gopkg.in/vrecan/death.v3/deathlog"
 )
 
 // Death manages the death of your application.
