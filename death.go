@@ -11,8 +11,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-
-	"gopkg.in/vrecan/death.v3/deathlog"
 )
 
 // Death manages the death of your application.
@@ -21,7 +19,7 @@ type Death struct {
 	sigChannel  chan os.Signal
 	callChannel chan struct{}
 	timeout     time.Duration
-	log         deathlog.Logger
+	log         Logger
 }
 
 // closer is a wrapper to the struct we are going to close with metadata
@@ -40,7 +38,7 @@ func NewDeath(signals ...os.Signal) (death *Death) {
 		sigChannel:  make(chan os.Signal, 1),
 		callChannel: make(chan struct{}, 1),
 		wg:          &sync.WaitGroup{},
-		log:         deathlog.DefaultLogger()}
+		log:         DefaultLogger()}
 	signal.Notify(death.sigChannel, signals...)
 	death.wg.Add(1)
 	go death.listenForSignal()
@@ -54,7 +52,7 @@ func (d *Death) SetTimeout(t time.Duration) *Death {
 }
 
 // SetLogger Overrides the default logger (seelog)
-func (d *Death) SetLogger(l deathlog.Logger) *Death {
+func (d *Death) SetLogger(l Logger) *Death {
 	d.log = l
 	return d
 }
