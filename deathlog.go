@@ -1,4 +1,4 @@
-package deathlog
+package death
 
 // Logger interface to log.
 type Logger interface {
