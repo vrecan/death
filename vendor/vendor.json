@@ -18,12 +18,6 @@
 			"revisionTime": "2016-01-05T15:08:40-07:00"
 		},
 		{
-			"checksumSHA1": "9y/iQh3/YtX31wAu7eJravtjTro=",
-			"path": "github.com/sirupsen/logrus",
-			"revision": "8c0189d9f6bbf301e5d055d34268156b317016af",
-			"revisionTime": "2018-02-13T14:31:10Z"
-		},
-		{
 			"path": "github.com/smartystreets/assertions",
 			"revision": "edb6e295a22c57a2aa353b2f0729b6eff9f9f4b7",
 			"revisionTime": "2015-12-10T10:08:24-07:00"
@@ -47,25 +41,7 @@
 			"path": "github.com/smartystreets/goconvey/convey/reporting",
 			"revision": "a2d5d788f3afbce0989463251ccc5492fad832df",
 			"revisionTime": "2015-12-28T14:47:19-07:00"
-		},
-		{
-			"checksumSHA1": "6U7dCaxxIMjf5V02iWgyAwppczw=",
-			"path": "golang.org/x/crypto/ssh/terminal",
-			"revision": "8c653846df49742c4c85ec37e5d9f8d3ba657895",
-			"revisionTime": "2018-02-19T16:33:59Z"
-		},
-		{
-			"checksumSHA1": "+UMEPHX8wvMkCxa+ofAmBKlqdYg=",
-			"path": "golang.org/x/sys/unix",
-			"revision": "f6cff0780e542efa0c8e864dc8fa522808f6a598",
-			"revisionTime": "2018-02-20T20:26:15Z"
-		},
-		{
-			"checksumSHA1": "eQq+ZoTWPjyizS9XalhZwfGjQao=",
-			"path": "golang.org/x/sys/windows",
-			"revision": "f6cff0780e542efa0c8e864dc8fa522808f6a598",
-			"revisionTime": "2018-02-20T20:26:15Z"
 		}
 	],
-	"rootPath": "github.com/grindlemire/death"
+	"rootPath": "github.com/vrecan/death"
 }
