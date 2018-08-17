@@ -104,6 +104,6 @@ When you are ready to publish the release make sure you...
 3. Create a new tag for the specific release version you will publish (example: `git tag v3.0.1`)
 4. Push the tag up to github (example: `git push origin v3.0.1`)
 5. Go to the release tab in github
-6. Select the target branch as the release branch and type in the tag name (tagname should include `v` so  example: `v.3.0.1`)
+6. Select the target branch as the release branch and type in the tag name (tagname should include `v` so  example: `v3.0.1`)
 7. Write a title and a well worded description on exactly what is in this change
 8. Click publish release
