@@ -3,12 +3,10 @@ package death
 import (
 	"testing"
 
-	log "github.com/cihub/seelog"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestGetPkgPath(t *testing.T) {
-	defer log.Flush()
 
 	Convey("Give pkgPath a ptr", t, func() {
 		c := &Closer{}

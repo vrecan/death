@@ -69,6 +69,7 @@ type NewType struct {
 func (c *NewType) Close() error {
 	return nil
 }
+
 ```
 
 ### Or close using an anonymous function
