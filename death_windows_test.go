@@ -2,8 +2,6 @@ package death
 
 import (
 	"bytes"
-	log "github.com/cihub/seelog"
-	. "github.com/smartystreets/goconvey/convey"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -11,11 +9,11 @@ import (
 	"syscall"
 	"testing"
 	"time"
+
+	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestDeath(t *testing.T) {
-
-	defer log.Flush()
 
 	Convey("Validate death happens cleanly on windows with ctrl-c event", t, func() {
 		// create source file
