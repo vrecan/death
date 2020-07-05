@@ -9,7 +9,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/cihub/seelog"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
@@ -20,7 +19,6 @@ func (u Unhashable) Close() error {
 }
 
 func TestDeath(t *testing.T) {
-	defer seelog.Flush()
 
 	Convey("Validate death handles unhashable types", t, func() {
 		u := make(Unhashable)
