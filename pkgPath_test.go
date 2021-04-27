@@ -12,7 +12,7 @@ func TestGetPkgPath(t *testing.T) {
 		c := &Closer{}
 		name, pkgPath := getPkgPath(c)
 		So(name, ShouldEqual, "Closer")
-		So(pkgPath, ShouldEqual, "github.com/vrecan/death")
+		So(pkgPath, ShouldEqual, "github.com/vrecan/death/v3")
 
 	})
 
@@ -21,14 +21,14 @@ func TestGetPkgPath(t *testing.T) {
 		closable = Closer{}
 		name, pkgPath := getPkgPath(closable)
 		So(name, ShouldEqual, "Closer")
-		So(pkgPath, ShouldEqual, "github.com/vrecan/death")
+		So(pkgPath, ShouldEqual, "github.com/vrecan/death/v3")
 	})
 
 	Convey("Give pkgPath a copy", t, func() {
 		c := Closer{}
 		name, pkgPath := getPkgPath(c)
 		So(name, ShouldEqual, "Closer")
-		So(pkgPath, ShouldEqual, "github.com/vrecan/death")
+		So(pkgPath, ShouldEqual, "github.com/vrecan/death/v3")
 	})
 }
 
