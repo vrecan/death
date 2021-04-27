@@ -1,4 +1,4 @@
-module github.com/vrecan/death
+module github.com/vrecan/death/v3
 
 go 1.14
 
