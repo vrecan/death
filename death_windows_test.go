@@ -21,7 +21,7 @@ func TestDeath(t *testing.T) {
 package main
 import (
 	"syscall"
-	"github.com/vrecan/death"
+	"github.com/vrecan/death/v3"
 )
 func main() {
 	death := death.NewDeath(syscall.SIGINT)
