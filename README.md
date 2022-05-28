@@ -24,7 +24,7 @@ go get gopkg.in/vrecan/death.v3
 package main
 
 import (
-	DEATH "github.com/vrecan/death"
+	DEATH "github.com/vrecan/death/v3"
 	SYS "syscall"
 )
 
@@ -44,7 +44,7 @@ package main
 
 import (
 	"log"
-	DEATH "github.com/vrecan/death"
+	DEATH "github.com/vrecan/death/v3"
 	SYS "syscall"
 	"io"
 )
@@ -78,7 +78,7 @@ func (c *NewType) Close() error {
 package main
 
 import (
-	DEATH "github.com/vrecan/death"
+	DEATH "github.com/vrecan/death/v3"
 	SYS "syscall"
 )
 
