@@ -15,7 +15,7 @@ Use gopkg.in to import death based on your logger.
 Example
 
 ```bash
-go get gopkg.in/vrecan/death.v3
+go get github.com/vrecan/death/v3
 ```
 
 ## Use The Library
